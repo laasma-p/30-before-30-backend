@@ -2,6 +2,7 @@ const express = require("express");
 require("dotenv").config();
 const cors = require("cors");
 const bcrypt = require("bcrypt");
+const session = require("express-session");
 const Item = require("./item");
 const User = require("./user");
 
@@ -10,6 +11,15 @@ const app = express();
 const PORT = process.env.PORT;
 app.use(cors());
 app.use(express.json());
+
+app.use(
+  session({
+    secret: process.env.SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false },
+  })
+);
 
 app.post("/login", async (req, res) => {
   const { enteredEmail, enteredPassword } = req.body;
@@ -29,11 +39,25 @@ app.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid password" });
     }
 
+    req.session.user = { id: user.id, email: user.email };
+
     res.status(200).json({ message: "Login successful" });
   } catch (error) {
     console.error("Error logging in:", error);
     res.status(500).json({ message: "Internal server error" });
   }
+});
+
+app.post("/logout", (req, res) => {
+  req.session.destroy((error) => {
+    if (error) {
+      console.error("Error destroying session:", error);
+      res.status(500).json({ message: "Internal server error" });
+    } else {
+      res.clearCookie("connect.sid");
+      res.sendStatus(200);
+    }
+  });
 });
 
 app.get("/items", async (req, res) => {
