@@ -29,6 +29,16 @@ const verifyToken = (req, res, next) => {
   });
 };
 
+app.get("/public-items-list", async (req, res) => {
+  try {
+    const listData = await Item.findAll();
+    res.json(listData);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 app.post("/login", async (req, res) => {
   const { enteredEmail, enteredPassword } = req.body;
 
