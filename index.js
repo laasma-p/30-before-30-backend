@@ -39,6 +39,17 @@ app.get("/public-items-list", async (req, res) => {
   }
 });
 
+app.get("/user-items-list", verifyToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const userListData = await Item.findAll({ where: { userId } });
+    res.json(userListData);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 app.post("/login", async (req, res) => {
   const { enteredEmail, enteredPassword } = req.body;
 
