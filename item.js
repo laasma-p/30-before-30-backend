@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("./sequelize");
+const User = require("./user");
 
 const Item = sequelize.define(
   "item",
@@ -18,10 +19,16 @@ const Item = sequelize.define(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
   },
   {
     timestamps: false,
   }
 );
+
+Item.belongsTo(User, { foreignKey: "userId" });
 
 module.exports = Item;
