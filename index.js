@@ -29,6 +29,29 @@ const verifyToken = (req, res, next) => {
   });
 };
 
+app.post("/complete-item", verifyToken, async (req, res) => {
+  const { itemId } = req.body;
+
+  try {
+    const item = await Item.findByPk(itemId);
+
+    if (!item) {
+      return res.status(404).json({ message: "Item not found " });
+    }
+
+    if (item.userId !== req.user.userId) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    item.completed = true;
+    await item.save();
+    res.json({ message: "Item marked as complete" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 app.get("/public-items-list", async (req, res) => {
   try {
     const listData = await Item.findAll();
