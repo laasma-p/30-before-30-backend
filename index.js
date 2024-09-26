@@ -52,16 +52,6 @@ app.post("/complete-item", verifyToken, async (req, res) => {
   }
 });
 
-app.get("/public-items-list", async (req, res) => {
-  try {
-    const listData = await Item.findAll();
-    res.json(listData);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
 app.get("/user-items-list", verifyToken, async (req, res) => {
   try {
     const userId = req.user.userId;
