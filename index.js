@@ -99,6 +99,18 @@ app.delete("/remove-item/:id", verifyToken, async (req, res) => {
   }
 });
 
+app.delete("/clear-list", verifyToken, async (req, res) => {
+  const userId = req.user.userId;
+
+  try {
+    await Item.destroy({ where: { userId } });
+    res.status(200).json({ message: "All items removed" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 app.post("/login", async (req, res) => {
   const { enteredEmail, enteredPassword } = req.body;
 
