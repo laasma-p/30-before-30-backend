@@ -81,6 +81,24 @@ app.post("/add-item", verifyToken, async (req, res) => {
   }
 });
 
+app.delete("/remove-item/:id", verifyToken, async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.userId;
+
+  try {
+    const item = await Item.findByPk(id);
+    if (!item) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    await item.destroy();
+    res.status(200).json({ message: "Item removed" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 app.post("/login", async (req, res) => {
   const { enteredEmail, enteredPassword } = req.body;
 
