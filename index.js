@@ -63,6 +63,24 @@ app.get("/user-items-list", verifyToken, async (req, res) => {
   }
 });
 
+app.post("/add-item", verifyToken, async (req, res) => {
+  const { item } = req.body;
+  const userId = req.user.userId;
+
+  if (!item) {
+    return res.status(400).json({ message: "Item name is required" });
+  }
+
+  try {
+    const newItem = await Item.create({ item, userId });
+
+    res.status(201).json(newItem);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 app.post("/login", async (req, res) => {
   const { enteredEmail, enteredPassword } = req.body;
 
