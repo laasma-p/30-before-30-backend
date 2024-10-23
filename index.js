@@ -111,6 +111,31 @@ app.delete("/clear-list", verifyToken, async (req, res) => {
   }
 });
 
+app.put("/edit-item/:id", verifyToken, async (req, res) => {
+  const { id } = req.params;
+  const { item } = req.body;
+  const userId = req.user.userId;
+
+  if (!item) {
+    return res.status(400).json({ message: "Item is required" });
+  }
+
+  try {
+    const existingItem = await Item.findByPk(id);
+
+    if (!existingItem) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    existingItem.item = item;
+    await existingItem.save();
+    res.json(existingItem);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 app.post("/login", async (req, res) => {
   const { enteredEmail, enteredPassword } = req.body;
 
